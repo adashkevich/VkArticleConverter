@@ -1,44 +1,37 @@
-package com.adashkevich;
+package com.adashkevich.vkarticle.converter;
 
+import com.adashkevich.vkarticle.VkArticle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Converter {
-    //Pattern vkArticlePattern = Pattern.compile("(https://)?vk.com/@([a-z0-9-]+)");
+    public static Properties prop;
 
-    public Converter() {
-
+    public boolean convert(VkArticle article) {
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        return convert(article, prop.getProperty("output.dir", tmpDir));
     }
 
-    public boolean convert(String vkArticleUrl) {
-        return convert(vkArticleUrl, System.getProperty("java.io.tmpdir"));
-    }
-
-    public boolean convert(String vkArticleUrl, String resultPath) {
+    public boolean convert(VkArticle article, String resultPath) {
         try {
-            String name = getArticleName(vkArticleUrl);
-            Element articleEl = getArticle(vkArticleUrl);
+            Element articleEl = getArticle(article.getUrl());
             removeExtraElements(articleEl);
             awayLinksFix(articleEl);
+            linksSubstitute(articleEl);
             imagesFix(articleEl);
-            save(articleEl, name, resultPath);
+            save(articleEl, article, resultPath);
 
         } catch (IOException e) {
             //TODO log exception
@@ -48,11 +41,12 @@ public class Converter {
         return true;
     }
 
-    private void save(Element articleEl, String name, String path) throws IOException {
+    private void save(Element articleEl, VkArticle article, String path) throws IOException {
         Document template = getTemplate();
-        setTitle(template, articleEl);
+        noScriptFix(template);
+        setHeaders(template, articleEl, article);
         setContent(template, articleEl);
-        String resultFileName = path + name + ".html";
+        String resultFileName = path + article.getName() + ".html";
         try (FileOutputStream out = new FileOutputStream(resultFileName)) {
             out.write(template.html().getBytes("UTF-8"));
         }
@@ -60,19 +54,32 @@ public class Converter {
         System.out.println(resultFileName);
     }
 
-    private void setTitle(Document template, Element articleEl) {
+    private void setHeaders(Document template, Element articleEl, VkArticle article) {
+        setTitle(template, articleEl, article);
+        setDescription(template, articleEl, article);
+        setKeywords(template, articleEl, article);
+    }
+
+    private void setTitle(Document template, Element articleEl, VkArticle article) {
         String title = articleEl.select("h1").get(0).text();
         Element titleEl = template.select("*:containsOwn({{TITLE}})").get(0);
-        titleEl.empty().text(title);
+        titleEl.empty().text(article.getTitle(title));
     }
+
+    private void setDescription(Document template, Element articleEl, VkArticle article) {
+        Element descriptionEl = template.select("meta[name=description]").get(0);
+        descriptionEl.attr("content", article.getDescription());
+    }
+
+    private void setKeywords(Document template, Element articleEl, VkArticle article) {
+        Element keywordEl = template.select("meta[name=keywords]").get(0);
+        keywordEl.attr("content", article.getKeywords());
+    }
+
 
     private void setContent(Document template, Element articleEl) {
         Element contentEl = template.select("*:containsOwn({{CONTENT}})").get(0);
         contentEl.empty().appendChild(articleEl);
-    }
-
-    private String getArticleName(String vkArticleUrl) {
-        return vkArticleUrl.split("@")[1];
     }
 
     private Element getArticle(String vkArticleUrl) throws IOException {
@@ -84,6 +91,15 @@ public class Converter {
         articleEl.removeClass("article_mobile");
         articleEl.select(".article__info_line").get(0).remove();
         articleEl.select(".article_bottom_extra_info").get(0).remove();
+    }
+
+    //Jsoup bug fix https://github.com/jhy/jsoup/issues/927
+    private void noScriptFix(Element html) {
+        Elements noScripts = html.select("noscript");
+        for (Element noScript : noScripts) {
+            String noScriptHtml = Parser.unescapeEntities(noScript.text(), true);
+            noScript.html(noScriptHtml);
+        }
     }
 
     private void awayLinksFix(Element articleEl) {
@@ -103,6 +119,26 @@ public class Converter {
         }
     }
 
+    private void linksSubstitute(Element articleEl) {
+        String linksMapPath = prop.getProperty("links_map.path", "");
+        if (!linksMapPath.isEmpty()) {
+            try (InputStream is = new FileInputStream(linksMapPath)) {
+                Map substituteLinks = new Gson().fromJson(new InputStreamReader(is), Map.class);
+                Elements links = articleEl.select("a");
+                for (Element link : links) {
+                    String href = link.attr("href");
+                    if (substituteLinks.containsKey(href)) {
+                        link.attr("href", (String)substituteLinks.get(href));
+                    }
+                }
+            } catch (IOException e) {
+                //TODO log exception
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private void imagesFix(Element articleEl) {
         Elements figures = articleEl.select("figure");
         for (Element figure : figures) {
@@ -110,7 +146,7 @@ public class Converter {
                 Element imgWrapper = figure.select(".article_object_sizer_wrap").get(0);
                 SizerSet sizer = new SizerSet(imgWrapper.attr("data-sizes"));
                 String srcSet = sizer.toString();
-                imgWrapper.attr("data-sizes", "100vw")
+                imgWrapper.attr("data-sizes", "800vw")
                         .attr("data-srcset", srcSet)
                         .addClass("progressive").addClass("replace")
                         .attr("data-href", sizer.biggestImg());
@@ -165,13 +201,13 @@ public class Converter {
 
         public Sizer get(char size) {
             Optional<Sizer> sizer = sizers.stream().filter(s -> s.getSize() == size).findAny();
-            if(sizer.isPresent()) {
+            if (sizer.isPresent()) {
                 return sizer.get();
             }
             return null;
         }
 
-        class Sizer  {
+        class Sizer {
             private char size;
             private String url;
             private int width;
@@ -197,7 +233,7 @@ public class Converter {
     }
 
     private Document getTemplate() throws IOException {
-        URL url = getClass().getClassLoader().getResource("template.html");
-        return Jsoup.parse(new File(URLDecoder.decode(url.getFile(), "UTF-8")), "UTF-8");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("template.html");
+        return Jsoup.parse(is, "UTF-8","");
     }
 }
