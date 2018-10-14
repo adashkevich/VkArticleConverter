@@ -1,0 +1,224 @@
+@font-face {
+    font-family: "Museo";
+    font-style: normal;
+    font-weight: 700;
+    src: url("../fonts/museo700.woff2") format("woff2"), url("../fonts/museo700.woff") format("woff"), url("../fonts/museo700.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "PT Serif";
+    font-style: normal;
+    font-weight: 400;
+    src: local("PT Serif"), local("PTSerif-Regular"), url("../fonts/fU0HAfLiPHGlZhZpY6M7dBTbgVql8nDJpwnrE27mub0.woff2") format("woff2");
+    unicode-range: U+400-45F, U+490-491, U+4B0-4B1, U+2116;
+}
+
+@font-face {
+    font-family: "PT Serif";
+    font-style: normal;
+    font-weight: 400;
+    src: local("PT Serif"), local("PTSerif-Regular"), url("../fonts/I-OtoJZa3TeyH6D9oli3ifesZW2xOQ-xsNqO47m55DA.woff2") format("woff2");
+    unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212, U+2215;
+}
+
+@font-face {
+    font-family: "PT Serif";
+    font-style: normal;
+    font-weight: 700;
+    src: local("PT Serif Bold"), local("PTSerif-Bold"), url("../fonts/QABk9IxT-LFTJ_dQzv7xpI4P5ICox8Kq3LLUNMylGO4.woff2") format("woff2");
+    unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212, U+2215;
+}
+
+body {
+    margin: 0 !important;
+}
+/*https://vk.com/fonts/museo700.woff2*/
+body.article_body {
+    background-color: #fff;
+    -o-transition: background-color 450ms ease-in-out;
+    transition: background-color 450ms ease-in-out;
+}
+
+body {
+    color: #000;
+    direction: ltr;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif;
+    line-height: 1.154;
+    font-weight: 400;
+}
+
+body.firefox #page_wrap {
+    overflow: visible;
+}
+
+body.firefox #page_wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.article:not(.article_mobile) > ol, .article:not(.article_mobile) > p, .article:not(.article_mobile) > pre, .article:not(.article_mobile) > ul {
+    margin-top: 24px;
+    margin-bottom: 0;
+}
+
+.scroll_fix_wrap {
+    text-align: left;
+    direction: ltr;
+}
+
+.article_layer {
+    background-color: #fff;
+    /*position: fixed;*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 130;
+    overflow: auto;
+    opacity: 0;
+    -o-transition: background-color 450ms ease-in-out, opacity 120ms linear;
+    transition: background-color 450ms ease-in-out, opacity 120ms linear;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.article_layer .article_layer__content {
+    width: 720px;
+    margin: 0 auto;
+    position: relative;
+    -o-transition: opacity 100ms linear;
+    transition: opacity 100ms linear;
+}
+
+.article_layer .article {
+    /*margin-top: 45px;*/
+    margin: 45px 0;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    -o-transition: background-color 450ms ease-in-out;
+    transition: background-color 450ms ease-in-out;
+}
+
+.article {
+    padding: 0;
+    margin: 0;
+    margin-top: 0px;
+    font-size: 19px;
+    font-family: PT Serif, serif;
+    color: rgba(0, 0, 0, .86);
+    line-height: 1.5em;
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+    background-color: #fff;
+}
+
+.article:not(.article_mobile) > h1, .article:not(.article_mobile) > h2, .article:not(.article_mobile) > h3 {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.article:not(.article_mobile) > h2, .article:not(.article_mobile) > h3, .article:not(.article_mobile) > h1 + * {
+    margin-top: 40px;
+
+}
+
+.article > :first-child {
+    margin-top: 0;
+}
+
+.article h1, .article h2, .article h3 {
+    margin-left: -2px;
+}
+
+.article > h1 {
+    font-family: Museo, sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #222;
+    line-height: 41px;
+}
+
+.article > blockquote {
+    padding: 0 30px 0 70px;
+    padding-left: 70px;
+    font-style: italic;
+    margin: 0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    line-height: 1.5em;
+    border-left: 2px solid #000;
+    padding-left: 18px;
+}
+
+.article:not(.article_mobile) > blockquote {
+    margin-top: 21px;
+    margin-bottom: 21px;
+}
+
+.article:not(.article_mobile) > ol > li, .article:not(.article_mobile) > ul > li {
+    margin-bottom: 12px;
+}
+
+.article:not(.article_mobile) > ol > li:last-child, .article:not(.article_mobile) > ul > li:last-child {
+    margin-bottom: 0;
+}
+
+.article:not(.article_mobile) > cite, .article:not(.article_mobile) > figure {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.article > figure {
+    position: relative;
+    margin-right: -40px;
+    margin-left: -40px;
+}
+
+.article_view > figure .article_figure_sizer_content {
+    width: 100%;
+    height: 100%;
+}
+
+.article > figure .article_object_sizer_wrap {
+    position: relative;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.article > figure .article_object_video, .article > figure img, .article > figure video {
+    border-radius: 2px;
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.article_view > figure[data-type="101"] img {
+    width: 100%;
+    display: block;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.article > figure figcaption:not(.article_ed__figcaption) {
+    font-family: sans-serif;
+    font-size: 14px;
+    color: gray;
+    line-height: 18px;
+    margin-top: 12px;
+}
+.article > figure figcaption {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+    margin-top: 0px;
+}
+

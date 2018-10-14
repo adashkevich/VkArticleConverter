@@ -11,9 +11,7 @@ import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.*;
 
 public class Converter {
@@ -106,11 +104,9 @@ public class Converter {
         Elements links = articleEl.select("a");
         for (Element link : links) {
             try {
-                String href = link.attr("href");
+                String href = URLDecoder.decode(link.attr("href"), "UTF-8");
                 if (href.startsWith("/away.php?to=")) {
-                    href.replace("/away.php?to=", "");
-                    href = URLEncoder.encode(href, "UTF-8");
-                    link.attr("href", href);
+                    link.attr("href", href.replace("/away.php?to=", ""));
                 }
             } catch (UnsupportedEncodingException e) {
                 //TODO log exception
