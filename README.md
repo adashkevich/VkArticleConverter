@@ -1,3 +1,3 @@
-##VkArticleConverter
+## VkArticleConverter
 
-software designed for converting vk.com articles to html pages
+software designed for converting vk.com articles to HTML pages
